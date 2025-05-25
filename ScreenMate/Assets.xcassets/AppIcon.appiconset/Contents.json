@@ -1,0 +1,68 @@
+{
+  "images" : [
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_25PM.jpeg",
+      "idiom" : "mac",
+      "scale" : "1x",
+      "size" : "16x16"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_29PM 6.jpeg",
+      "idiom" : "mac",
+      "scale" : "2x",
+      "size" : "16x16"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_29PM 5.jpeg",
+      "idiom" : "mac",
+      "scale" : "1x",
+      "size" : "32x32"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_29PM 4.jpeg",
+      "idiom" : "mac",
+      "scale" : "2x",
+      "size" : "32x32"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_29PM 3.jpeg",
+      "idiom" : "mac",
+      "scale" : "1x",
+      "size" : "128x128"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_29PM 2.jpeg",
+      "idiom" : "mac",
+      "scale" : "2x",
+      "size" : "128x128"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_29PM 1.jpeg",
+      "idiom" : "mac",
+      "scale" : "1x",
+      "size" : "256x256"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_29PM.jpeg",
+      "idiom" : "mac",
+      "scale" : "2x",
+      "size" : "256x256"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_27PM.jpeg",
+      "idiom" : "mac",
+      "scale" : "1x",
+      "size" : "512x512"
+    },
+    {
+      "filename" : "Generated Image May 25, 2025 - 10_24PM.jpeg",
+      "idiom" : "mac",
+      "scale" : "2x",
+      "size" : "512x512"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
