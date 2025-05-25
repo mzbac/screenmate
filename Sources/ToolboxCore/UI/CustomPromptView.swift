@@ -275,17 +275,18 @@ struct CustomPromptView: View {
         
         showingSaveConfirmation = true
         
-        let notificationManager = NotificationManager()
-        if trimmedUserPrompt.isEmpty && trimmedSystemPrompt.isEmpty {
-            notificationManager.showInfoNotification(
-                title: "Custom Prompts Cleared",
-                message: "Reverted to default image processing behavior"
-            )
-        } else {
-            notificationManager.showInfoNotification(
-                title: "Custom Prompts Saved",
-                message: "Use the main Process Screenshot button to apply your custom prompts"
-            )
+        if let notificationManager = AppDelegate.shared?.sharedNotificationManager {
+            if trimmedUserPrompt.isEmpty && trimmedSystemPrompt.isEmpty {
+                notificationManager.showInfoNotification(
+                    title: "Custom Prompts Cleared",
+                    message: "Reverted to default image processing behavior"
+                )
+            } else {
+                notificationManager.showInfoNotification(
+                    title: "Custom Prompts Saved",
+                    message: "Use the main Process Screenshot button to apply your custom prompts"
+                )
+            }
         }
     }
     
@@ -301,11 +302,12 @@ struct CustomPromptView: View {
         
         showingSaveConfirmation = true
         
-        let notificationManager = NotificationManager()
-        notificationManager.showInfoNotification(
-            title: "Custom Prompts Cleared",
-            message: "Reset to default image processing behavior"
-        )
+        if let notificationManager = AppDelegate.shared?.sharedNotificationManager {
+            notificationManager.showInfoNotification(
+                title: "Custom Prompts Cleared",
+                message: "Reset to default image processing behavior"
+            )
+        }
     }
     
     private func applyPromptSet(_ promptSet: AppSettings.PromptSet) {
@@ -314,10 +316,11 @@ struct CustomPromptView: View {
         systemPrompt = screenMateEngine.getPredefinedSystemPrompt(for: promptSet)
         userPrompt = screenMateEngine.getPredefinedUserPrompt(for: promptSet)
         
-        let notificationManager = NotificationManager()
-        notificationManager.showInfoNotification(
-            title: "Applied \(promptSet.displayName)",
-            message: "Predefined prompts loaded. Save to apply them."
-        )
+        if let notificationManager = AppDelegate.shared?.sharedNotificationManager {
+            notificationManager.showInfoNotification(
+                title: "Applied \(promptSet.displayName)",
+                message: "Predefined prompts loaded. Save to apply them."
+            )
+        }
     }
 }

@@ -35,6 +35,10 @@ class MenuBarManager: NSObject {
         self.autostartManager = manager
     }
     
+    func closePanel() {
+        panelController?.close()
+    }
+    
     @objc private func togglePanel() {
         guard let panel = panelController?.window as? NSPanel else {
             return

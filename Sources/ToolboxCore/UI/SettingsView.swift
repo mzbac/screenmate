@@ -159,8 +159,8 @@ struct SettingsView: View {
                                 TextField("", value: $appSettings.maxTokens, format: .number)
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .frame(width: 80)
-                                    .onChange(of: appSettings.maxTokens) { newValue in
-                                        appSettings.maxTokens = max(128, min(4096, newValue))
+                                    .onSubmit {
+                                        appSettings.maxTokens = max(128, min(4096, appSettings.maxTokens))
                                     }
                             }
                         }
@@ -247,8 +247,8 @@ struct SettingsView: View {
                                 TextField("", value: $appSettings.repetitionContextSize, format: .number)
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .frame(width: 80)
-                                    .onChange(of: appSettings.repetitionContextSize) { newValue in
-                                        appSettings.repetitionContextSize = max(10, min(100, newValue))
+                                    .onSubmit {
+                                        appSettings.repetitionContextSize = max(10, min(100, appSettings.repetitionContextSize))
                                     }
                             }
                         }

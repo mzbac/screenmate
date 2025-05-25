@@ -1,4 +1,5 @@
 import Cocoa
+import UserNotifications
 
 public class AppDelegate: NSObject, NSApplicationDelegate {
     
@@ -9,6 +10,7 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     private var customPromptPanelController: CustomPromptPanelController?
     private var appSettings: AppSettings?
     private var screenMateEngine: ScreenMateEngine?
+    private var notificationManager: NotificationManager?
     
     public override init() {
         super.init()
@@ -22,10 +24,24 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
         screenMateEngine = ScreenMateEngine()
         autostartManager = AutostartManager()
         menuBarManager = MenuBarManager()
+        notificationManager = NotificationManager()
         
         appSettings = sharedAppSettings
         
         menuBarManager?.setAutostartManager(autostartManager)
+        
+        // Request notification permission on first launch
+        requestNotificationPermissionIfNeeded()
+    }
+    
+    private func requestNotificationPermissionIfNeeded() {
+        Task { @MainActor in
+            // Only request if we haven't asked before or if permission was denied
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            if settings.authorizationStatus == .notDetermined {
+                _ = await notificationManager?.requestNotificationPermission()
+            }
+        }
     }
     
     public func applicationWillTerminate(_ aNotification: Notification) {
@@ -41,6 +57,14 @@ public class AppDelegate: NSObject, NSApplicationDelegate {
     
     public var sharedAppSettings: AppSettings? {
         return self.appSettings
+    }
+    
+    public var sharedNotificationManager: NotificationManager? {
+        return self.notificationManager
+    }
+    
+    public func closeMenuBar() {
+        menuBarManager?.closePanel()
     }
     
     public func showCustomPromptPanel() {

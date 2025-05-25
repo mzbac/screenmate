@@ -5,6 +5,11 @@ import Cocoa
 class ScreenshotManager: ObservableObject {
     
     @Published var isCapturing: Bool = false
+    private let notificationManager: NotificationManager
+    
+    init(notificationManager: NotificationManager) {
+        self.notificationManager = notificationManager
+    }
     
     func takeScreenshotToImage(playSound: Bool = false, completion: @escaping (NSImage?) -> Void) {
         guard !isCapturing else {
@@ -22,6 +27,13 @@ class ScreenshotManager: ObservableObject {
             self.performScreenCaptureToClipboard(playSound: playSound) { nsImage in
                 self.restoreAppPresence(keyWindow: currentKeyWindow)
                 self.isCapturing = false
+                
+                // Only notify about screenshot failures, not successes
+                // Success notifications will be handled after processing completes
+                if nsImage == nil {
+                    self.notificationManager.showScreenshotErrorNotification(error: "Failed to capture screenshot")
+                }
+                
                 completion(nsImage)
             }
         }

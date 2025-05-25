@@ -3,16 +3,18 @@ import UserNotifications
 import Combine
 
 @MainActor
-class NotificationManager: ObservableObject {
-    @Published var notificationsEnabled: Bool = false
+public class NotificationManager: NSObject, ObservableObject, UNUserNotificationCenterDelegate {
+    @Published public var notificationsEnabled: Bool = false
     
     private let notificationCenter = UNUserNotificationCenter.current()
     
-    init() {
+    public override init() {
+        super.init()
+        notificationCenter.delegate = self
         checkNotificationPermission()
     }
     
-    func requestNotificationPermission() async -> Bool {
+    public func requestNotificationPermission() async -> Bool {
         do {
             let granted = try await notificationCenter.requestAuthorization(
                 options: [.alert, .sound, .badge]
@@ -38,7 +40,17 @@ class NotificationManager: ObservableObject {
         }
     }
     
-    func showOCRSuccessNotification(textLength: Int) {
+    /// Shows notifications even when the app is in the foreground
+    nonisolated public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.banner, .sound, .badge])
+    }
+    
+    /// Handles notification interactions
+    nonisolated public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        completionHandler()
+    }
+    
+    public func showOCRSuccessNotification(textLength: Int) {
         guard notificationsEnabled else { return }
         
         let content = UNMutableNotificationContent()
@@ -53,10 +65,13 @@ class NotificationManager: ObservableObject {
         )
         
         notificationCenter.add(request) { error in
+            if let error = error {
+                print("Failed to add OCR success notification: \(error)")
+            }
         }
     }
     
-    func showOCRErrorNotification(error: String) {
+    public func showOCRErrorNotification(error: String) {
         guard notificationsEnabled else { return }
         
         let content = UNMutableNotificationContent()
@@ -71,10 +86,13 @@ class NotificationManager: ObservableObject {
         )
         
         notificationCenter.add(request) { error in
+            if let error = error {
+                print("Failed to add OCR error notification: \(error)")
+            }
         }
     }
     
-    func showModelLoadNotification(modelName: String, success: Bool) {
+    public func showModelLoadNotification(modelName: String, success: Bool) {
         guard notificationsEnabled else { return }
         
         let content = UNMutableNotificationContent()
@@ -94,10 +112,13 @@ class NotificationManager: ObservableObject {
         )
         
         notificationCenter.add(request) { error in
+            if let error = error {
+                print("Failed to add model load notification: \(error)")
+            }
         }
     }
     
-    func showInfoNotification(title: String, message: String) {
+    public func showInfoNotification(title: String, message: String) {
         guard notificationsEnabled else { return }
         
         let content = UNMutableNotificationContent()
@@ -112,10 +133,87 @@ class NotificationManager: ObservableObject {
         )
         
         notificationCenter.add(request) { error in
+            if let error = error {
+                print("Failed to add info notification: \(error)")
+            }
         }
     }
     
-    func clearAllNotifications() {
+    public func showScreenshotSuccessNotification() {
+        guard notificationsEnabled else { return }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Screenshot Captured"
+        content.body = "Screenshot has been saved to clipboard"
+        content.sound = UNNotificationSound.default
+        
+        let request = UNNotificationRequest(
+            identifier: "screenshot_success_\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        
+        notificationCenter.add(request) { error in
+            if let error = error {
+                print("Failed to add screenshot success notification: \(error)")
+            }
+        }
+    }
+    
+    public func showScreenshotErrorNotification(error: String) {
+        guard notificationsEnabled else { return }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Screenshot Failed"
+        content.body = "Error: \(error)"
+        content.sound = UNNotificationSound.default
+        
+        let request = UNNotificationRequest(
+            identifier: "screenshot_error_\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        
+        notificationCenter.add(request) { error in
+            if let error = error {
+                print("Failed to add screenshot error notification: \(error)")
+            }
+        }
+    }
+    
+    public func showScreenshotProcessCompleteNotification(success: Bool, textLength: Int = 0, errorMessage: String? = nil) {
+        guard notificationsEnabled else { return }
+        
+        let content = UNMutableNotificationContent()
+        
+        if success {
+            content.title = "Screenshot Process Complete"
+            if textLength > 0 {
+                content.body = "Successfully extracted \(textLength) characters of text"
+            } else {
+                content.body = "Screenshot processed successfully"
+            }
+        } else {
+            content.title = "Screenshot Process Failed"
+            content.body = errorMessage ?? "An error occurred during processing"
+        }
+        
+        content.sound = UNNotificationSound.default
+        
+        let request = UNNotificationRequest(
+            identifier: "screenshot_process_complete_\(UUID().uuidString)",
+            content: content,
+            trigger: nil
+        )
+        
+        notificationCenter.add(request) { error in
+            if let error = error {
+                print("Failed to add screenshot process complete notification: \(error)")
+            }
+        }
+    }
+    
+    public func clearAllNotifications() {
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
     }

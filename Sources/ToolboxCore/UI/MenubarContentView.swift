@@ -5,12 +5,18 @@ import Foundation
 
 struct MenubarContentView: View {
     @ObservedObject private var appSettings = AppSettings.shared
-    @StateObject private var screenshotManager = ScreenshotManager()
+    @StateObject private var screenshotManager: ScreenshotManager
     @StateObject private var autostartManager = AutostartManager()
     
     @ObservedObject private var screenMateEngine: ScreenMateEngine
     
+    private var notificationManager: NotificationManager? {
+        return AppDelegate.shared?.sharedNotificationManager
+    }
+    
     init() {
+        let sharedNotificationManager = AppDelegate.shared?.sharedNotificationManager ?? NotificationManager()
+        self._screenshotManager = StateObject(wrappedValue: ScreenshotManager(notificationManager: sharedNotificationManager))
         self._screenMateEngine = ObservedObject(wrappedValue: AppDelegate.shared?.sharedScreenMateEngine ?? ScreenMateEngine())
     }
     
@@ -231,6 +237,8 @@ struct MenubarContentView: View {
             return
         }
         
+        AppDelegate.shared?.closeMenuBar()
+        
         isProcessing = true
         processedTextResult = "Taking screenshot..."
         lastScreenshotPreviewImage = nil
@@ -248,7 +256,6 @@ struct MenubarContentView: View {
                 
                 let effectiveSystemPrompt = self.screenMateEngine.getEffectiveSystemPrompt(from: self.appSettings)
                 let effectivePrompt = self.screenMateEngine.getEffectivePrompt(from: self.appSettings)
-                let isUsingCustomPrompt = self.screenMateEngine.hasActiveCustomPrompt(from: self.appSettings)
                 
                 screenMateEngine.processImage(
                     onNSImage: image,
@@ -264,9 +271,12 @@ struct MenubarContentView: View {
                             self.appSettings.lastCustomPromptScreenshot = image
                             self.appSettings.lastProcessingSource = .defaultOCR
                             
-                            if !text.isEmpty {
-                                let notificationManager = NotificationManager()
-                                notificationManager.showOCRSuccessNotification(textLength: text.count)
+                            // Send notification for complete screenshot process
+                            if let notificationManager = self.notificationManager {
+                                notificationManager.showScreenshotProcessCompleteNotification(
+                                    success: true,
+                                    textLength: text.count
+                                )
                             }
                         case .failure(let error):
                             self.processedTextResult = "Image processing failed: \(error.localizedDescription)"
@@ -274,6 +284,14 @@ struct MenubarContentView: View {
                             self.appSettings.lastCustomPromptResult = ""
                             self.appSettings.lastCustomPromptScreenshot = image
                             self.appSettings.lastProcessingSource = .defaultOCR
+                            
+                            // Send notification for failed screenshot process
+                            if let notificationManager = self.notificationManager {
+                                notificationManager.showScreenshotProcessCompleteNotification(
+                                    success: false,
+                                    errorMessage: error.localizedDescription
+                                )
+                            }
                         }
                         self.isProcessing = false
                     }
