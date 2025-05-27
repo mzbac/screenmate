@@ -53,6 +53,27 @@ struct SettingsView: View {
                             ))
                         }
                         .padding(.vertical, 4)
+                        
+                        Divider()
+                        
+                        HStack {
+                            Image(systemName: "clipboard")
+                                .foregroundColor(.blue)
+                                .frame(width: 20)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Auto Copy Result to Clipboard")
+                                    .font(.body)
+                                Text("Automatically copy the processed text to the clipboard after successful analysis.")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            Toggle("", isOn: $appSettings.autoCopyToClipboard)
+                        }
+                        .padding(.vertical, 4)
                     }
                     
                     Divider()

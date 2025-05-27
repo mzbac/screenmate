@@ -53,6 +53,12 @@ public class AppSettings: ObservableObject {
         }
     }
     
+    @Published public var autoCopyToClipboard: Bool = false {
+        didSet {
+            UserDefaults.standard.set(autoCopyToClipboard, forKey: "autoCopyToClipboard")
+        }
+    }
+    
     @Published public var selectedPromptSet: PromptSet = .ocr {
         didSet {
             UserDefaults.standard.set(selectedPromptSet.rawValue, forKey: "selectedPromptSet")
@@ -126,5 +132,6 @@ public class AppSettings: ObservableObject {
         self.topP = UserDefaults.standard.object(forKey: "topP") as? Float ?? 0.95
         self.repetitionPenalty = UserDefaults.standard.object(forKey: "repetitionPenalty") as? Float ?? 1.0
         self.repetitionContextSize = UserDefaults.standard.object(forKey: "repetitionContextSize") as? Int ?? 20
+        self.autoCopyToClipboard = UserDefaults.standard.bool(forKey: "autoCopyToClipboard")
     }
 }

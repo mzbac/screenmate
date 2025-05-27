@@ -267,6 +267,11 @@ struct MenubarContentView: View {
                         case .success(let text):
                             self.processedTextResult = text.isEmpty ? "No text detected in image." : text
                             
+                            // Auto-copy to clipboard if enabled
+                            if self.appSettings.autoCopyToClipboard && !text.isEmpty {
+                                ClipboardHelper.copyToClipboard(text)
+                            }
+                            
                             self.appSettings.lastCustomPromptResult = ""
                             self.appSettings.lastCustomPromptScreenshot = image
                             self.appSettings.lastProcessingSource = .defaultOCR
@@ -313,9 +318,7 @@ struct MenubarContentView: View {
     }
     
     private func copyResultToClipboard() {
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(displayText, forType: .string)
+        ClipboardHelper.copyToClipboard(displayText)
     }
 }
 
